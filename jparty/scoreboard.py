@@ -135,7 +135,7 @@ class PlayerWidget(QWidget):
         for img in self.lights_backgrounds:
             self.background = img
             self.update()
-            time.sleep(1.0)
+            time.sleep(2.0)
             if self.__light_thread is None:  # provide stopability
                 return None
 

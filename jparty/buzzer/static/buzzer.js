@@ -13,7 +13,7 @@ async function buzz() {
 
         setTimeout(function () {
             $("#buzzer").prop("disabled", false);
-        }, 250);
+        }, 1000);
     };
 }
 

@@ -12,7 +12,7 @@ from collections.abc import Iterable
 import logging
 
 from jparty.utils import SongPlayer, resource_path, CompoundObject
-from jparty.constants import FJTIME, QUESTIONTIME
+from jparty.constants import FJTIME, QUESTIONTIME, PENTALTY_SCORE
 
 
 class QuestionTimer(object):
@@ -323,6 +323,11 @@ class Game(QObject):
             self.answering_player = player
             self.keystroke_manager.activate("CORRECT_ANSWER", "INCORRECT_ANSWER")
             self.dc.borders.lights(False)
+        elif self.active_question is not None and not self.accepting_responses:
+            self.set_score(
+                player,
+                player.score - PENTALTY_SCORE,
+            )
         elif self.active_question is None:
             self.dc.player_widget(player).buzz_hint()
         else:
