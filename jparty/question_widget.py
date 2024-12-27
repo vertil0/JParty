@@ -4,22 +4,36 @@ from PyQt6.QtGui import (
     QColor,
     QFont,
 )
+from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QWidget, QVBoxLayout
 
 from jparty.style import MyLabel, CARDPAL
 
+import requests
+from PyQt6.QtWidgets import QApplication, QWidget, QLabel
+from PyQt6.QtGui import QImage, QPixmap
 
 class QuestionWidget(QWidget):
-    def __init__(self, question, parent=None):
+    def __init__(self, question, parent=None, show_image=True):
         super().__init__(parent)
         self.question = question
         self.setAutoFillBackground(True)
 
         self.main_layout = QVBoxLayout()
-        self.question_label = MyLabel(question.text.upper(), self.startFontSize, self)
 
-        self.question_label.setFont(QFont("ITC_ Korinna"))
-        self.main_layout.addWidget(self.question_label)
+        self.question_text, url = self.getUrl(question.text)
+
+        if url and show_image:
+            image = QImage()
+            self.question_label = MyLabel("", self.startFontSize, self)
+            image.loadFromData(requests.get(url).content)
+            image = image.scaledToHeight(800)
+            self.question_label.setPixmap(QPixmap(image))
+            self.main_layout.addWidget(self.question_label)
+        else:
+            self.question_label = MyLabel(self.question_text.upper(), self.startFontSize, self)
+            self.question_label.setFont(QFont("ITC_ Korinna"))
+            self.main_layout.addWidget(self.question_label)
         self.setLayout(self.main_layout)
 
         self.setPalette(CARDPAL)
@@ -27,13 +41,20 @@ class QuestionWidget(QWidget):
 
     def startFontSize(self):
         return self.width() * 0.05
+    
+    def getUrl(self, text):
+        if 'http' in text:
+            text_split = text.split('http')
+            text_split[1] = 'http' + text_split[1]
+            return text_split
+        return text, ''
 
 
 class HostQuestionWidget(QuestionWidget):
     def __init__(self, question, parent=None):
-        super().__init__(question, parent)
+        super().__init__(question, parent, show_image=False)
 
-        self.question_label.setText(question.text)
+        self.question_label.setText(self.question_text)
         self.main_layout.setStretchFactor(self.question_label, 6)
         self.main_layout.addSpacing(self.main_layout.contentsMargins().top())
         self.answer_label = MyLabel(question.answer, self.startFontSize, self)
@@ -49,7 +70,7 @@ class HostQuestionWidget(QuestionWidget):
 
 
 class DailyDoubleWidget(QuestionWidget):
-    def __init__(self, question, parent=None):
+    def __init__(self, question, parent=None, show_image=True):
         super().__init__(question, parent)
         self.question_label.setVisible(False)
 
@@ -67,7 +88,7 @@ class DailyDoubleWidget(QuestionWidget):
 
 
 class HostDailyDoubleWidget(HostQuestionWidget, DailyDoubleWidget):
-    def __init__(self, question, parent=None):
+    def __init__(self, question, parent=None, show_image=False):
         super().__init__(question, parent)
         self.answer_label.setVisible(False)
 
@@ -89,7 +110,7 @@ class HostDailyDoubleWidget(HostQuestionWidget, DailyDoubleWidget):
 
 
 class FinalJeopardyWidget(QuestionWidget):
-    def __init__(self, question, parent=None):
+    def __init__(self, question, parent=None, show_image=True):
         super().__init__(question, parent)
         self.question_label.setVisible(False)
 
@@ -109,7 +130,7 @@ class FinalJeopardyWidget(QuestionWidget):
 
 
 class HostFinalJeopardyWidget(FinalJeopardyWidget, HostQuestionWidget):
-    def __init__(self, question, parent):
+    def __init__(self, question, parent, show_image=False):
         super().__init__(question, parent)
         self.answer_label.setVisible(False)
 

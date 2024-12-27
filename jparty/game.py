@@ -323,7 +323,7 @@ class Game(QObject):
             self.answering_player = player
             self.keystroke_manager.activate("CORRECT_ANSWER", "INCORRECT_ANSWER")
             self.dc.borders.lights(False)
-        elif self.active_question is not None and not self.accepting_responses:
+        elif self.active_question is not None and not self.accepting_responses and not self.answering_player:
             self.set_score(
                 player,
                 player.score - PENTALTY_SCORE,
