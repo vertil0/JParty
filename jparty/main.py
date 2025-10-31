@@ -70,7 +70,7 @@ def main():
     QApplication.setStyle(JPartyStyle())
     app = QApplication(sys.argv)
 
-    check_second_monitor()
+    # check_second_monitor()
     check_internet()
     app.setFont(QFont("Verdana"))
 

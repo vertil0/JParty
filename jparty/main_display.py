@@ -72,6 +72,7 @@ class DisplayWindow(QMainWindow):
 
     def monitor(self):
         return 1
+        # return 0
 
     def create_border_widget(self):
         return Borders(self)
